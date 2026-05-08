@@ -1,24 +1,26 @@
 from flask import Flask
 import os
 from models import db
-# IMPORTANTE: Cambiamos api.routes por controllers porque así se llama tu archivo
-from controllers import api 
+from controllers import api
 
 app = Flask(__name__)
 
-# Configuración para que Vercel encuentre la base de datos
-basedir = os.path.abspath(os.path.dirname(__file__))
+# CONFIGURACIÓN MAESTRA PARA VERCEL
+# Usamos la carpeta /tmp porque es la única con permisos de escritura
+db_path = os.path.join('/tmp', 'juegos.db')
 
-app.config['SECRET_KEY'] = 'clave_segura_athziri'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'juegos.db')
+app.config['SECRET_KEY'] = 'clave_athziri_2024'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-
-# Registramos el blueprint que está en controllers.py
 app.register_blueprint(api, url_prefix='/api')
 
+# Intentar crear la base de datos en la carpeta temporal
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+    except Exception as e:
+        print(f"Error creando la DB: {e}")
 
-# No pongas app.run() al final, Vercel no lo necesita
+# Vercel usará este objeto 'app'
