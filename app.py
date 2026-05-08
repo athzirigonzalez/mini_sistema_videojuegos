@@ -1,11 +1,16 @@
 from flask import Flask
 from models import db
-from api.routes import api
+# Eliminamos el "api." porque en tu GitHub el archivo está en la raíz
+from routes import api 
+import os
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///juegos.db'
+# Configuración de ruta absoluta para la base de datos
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'juegos.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'clave-por-defecto')
 
 db.init_app(app)
 
@@ -16,5 +21,5 @@ app.register_blueprint(api, url_prefix='/api')
 with app.app_context():
     db.create_all()
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# IMPORTANTE: Vercel necesita que 'app' esté disponible globalmente
+# No hace falta el app.run para el despliegue
