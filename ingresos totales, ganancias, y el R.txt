@@ -1,0 +1,4 @@
+ingresos totales, ganancias, y el ROI promedio (pagina1)
+
+
+popularidad; top 10, .grafico de dispersión que mostrara, presupuesto, ingresos totales y rating promedio, color por genero
